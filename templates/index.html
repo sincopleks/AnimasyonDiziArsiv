@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Animasyon Dizileri</title>
+    <style>
+        body { font-family: Verdana, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; }
+
+        .container { 
+            max-width: 1300px; 
+            margin: 0 auto; 
+            background: white; 
+            padding: 30px; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+
+
+
+
+
+
+
+        h1 { text-align: center; color: #2c3e50; margin-bottom: 30px; }
+        
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 10px;}
+        
+        form { display: flex; gap: 10px; flex-grow: 1; max-width: 600px; }
+        input[type="text"] { flex-grow: 1; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 15px; }
+        
+        .btn { padding: 10px 20px; text-decoration: none; font-weight: bold; cursor: pointer; border: none; font-size: 14px; display: inline-block; transition: background 0.2s; border-radius: 6px;}
+        .btn-search { background-color: #f72585; color: white; }
+        .btn-add { background-color: #9a04ff; color: white; }
+
+        .btn-edit { background-color: #3f37c9; color: white; padding: 6px 10px; font-size: 12px; }
+        .btn-delete { background-color: #5209b7; color: white; padding: 6px 10px; margin-left: 3px; font-size: 12px; }
+
+        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+
+
+
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; min-width: 1000px; }
+        th, td { padding: 12px 10px; border-bottom: 1px solid #eee; text-align: left; vertical-align: middle; }
+        th { background-color: #f8f9fa; color: #444; font-weight: 600; font-size: 13px; border-top: 2px solid #9a04ff; }
+        
+        tr:hover { background-color: #fcfcfc; }
+
+        .col-odul {
+            font-size: 11px; 
+            color: #555; 
+            max-width: 200px;
+            white-space: pre-wrap; 
+
+
+            
+        }
+
+
+        
+        
+        .col-puan {font-size: 13px; color:black; text-align: center;}
+        .col-yil { font-size: 13px; color:black; white-space: nowrap; }
+        .col-detay { font-size: 12px; color:black; }
+        .col-odul { font-size: 11px; color:black; max-width: 150px; text-align: left; }
+        .badge {
+            display: inline-block;
+            padding: 3px 6px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+            font-size: 11px;
+            margin-bottom: 2px;
+            color: #495057;
+        }
+
+        .no-result { text-align: center; color: #777; margin-top: 20px; padding: 20px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Animasyon Dizileri</h1>
+
+        <div class="top-bar">
+            <form method="POST">
+                <input type="text" name="aranan_kelime" placeholder="Dizi adı ara..." value="{{ aranan }}">
+                <button type="submit" class="btn btn-search">Ara</button>
+                {% if aranan %}
+                    <a href="/" style="padding: 10px; color: #666; text-decoration: underline;">Temizle</a>
+                {% endif %}
+            </form>
+            
+            <a href="/ekle" class="btn btn-add"> + Yeni Dizi Ekle</a>
+        </div>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 10%;">Dizi Adı</th>
+                        <th style="text-align: center;">Puan</th>
+                        <th>Yıl</th>
+                        <th>Tür / Teknik</th>
+                        <th>Sezon / Bölüm</th>
+                        <th>Yönetmen</th>
+                        <th>Platform</th>
+                        <th>Ödüller</th>
+                        <th style="width: 140px;">İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for dizi in sonuclar %}
+                    <tr>
+                        <td style="font-weight: 500; color: #000000;">{{ dizi[1] }}</td>
+                        
+                        <td class="col-puan">{{ dizi[2] }}</td>
+                        
+                        <td class="col-yil">
+                            {{ dizi[3] }} 
+                            {% if dizi[4] %}
+                                - {{ dizi[4] }}
+                            {% else %}
+                                - ...
+                            {% endif %}
+                        </td>
+                        
+                        <td>
+                            {% if dizi[5] %}<span class="badge">{{ dizi[5] }}</span><br>{% endif %}
+                            {% if dizi[6] %}<span class="badge" style="background-color:#e3f2fd; color:#0d47a1;">{{ dizi[6] }}</span>{% endif %}
+                        </td>
+
+                        <td class="col-detay">
+                            Sezon: {{ dizi[7] }}<br>
+                            Bölüm: {{ dizi[8] }}
+                        </td>
+
+                        <td class="col-detay">{{ dizi[10] if dizi[10] else '-' }}</td>
+
+                        <td class="col-detay" style="color: #000000;">{{ dizi[11] if dizi[11] else '-' }}</td>
+
+                        <td class="col-odul">{{ dizi[9] if dizi[9] else '' }}</td>
+
+                        <td>
+                            <a href="/guncelle/{{ dizi[0] }}" class="btn btn-edit">Düzenle</a>
+                            <a href="/sil/{{ dizi[0] }}" class="btn btn-delete" onclick="return confirm('{{ dizi[1] }} dizisini silmek istediğine emin misin?')">Sil</a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="9" class="no-result">Aradığınız kriterde dizi bulunamadı.</td>
+                    </tr>
+                    {% endfor %} 
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</body>
+</html>
